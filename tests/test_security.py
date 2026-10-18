@@ -49,5 +49,5 @@ def test_token_vencido_es_rechazado():
 
 def test_token_firmado_con_otra_clave_es_rechazado():
     vence = datetime.now(timezone.utc) + timedelta(minutes=10)
-    token = jwt.encode({"sub": "5", "exp": vence}, "clave-de-un-atacante", algorithm="HS256")
+    token = jwt.encode({"sub": "5", "exp": vence}, "clave-de-un-atacante-que-tambien-es-larga", algorithm="HS256")
     assert leer_token(token) is None
