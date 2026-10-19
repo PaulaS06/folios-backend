@@ -263,6 +263,7 @@ def calificar_documento(
 
     accion.valor = datos.valor
     accion.comentario = datos.comentario
+    accion.fecha_calificacion = hoy_colombia()
     db.commit()
     db.refresh(accion)
 
