@@ -34,3 +34,13 @@ def test_registro_con_correo_no_institucional_responde_422():
         "semestre": 6, "programa": "Ingeniería de Sistemas",
     })
     assert respuesta.status_code == 422
+
+
+def test_health_live_responde_200():
+    assert cliente.get("/health/live").status_code == 200
+
+
+def test_health_ready_sin_bd_responde_503():
+    # En las pruebas no hay BD real (conftest.py pone una DATABASE_URL falsa),
+    # así que /health/ready debe avisar con 503 en vez de romperse con un 500.
+    assert cliente.get("/health/ready").status_code == 503

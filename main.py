@@ -1,6 +1,6 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, Response
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -34,6 +34,21 @@ app.add_middleware(
 app.include_router(catalogs_router)
 app.include_router(documents_router)
 
+@app.get("/health/live", tags=["Salud"])
+def health_live():
+    # Solo confirma que el proceso responde. No toca la BD a propósito.
+    return {"status": "ok"}
+
+
+@app.get("/health/ready", tags=["Salud"])
+def health_ready(response: Response, db: Session = Depends(get_db)):
+    # Confirma que el backend puede atender: hace la consulta más barata posible a la BD.
+    try:
+        db.execute(text("SELECT 1"))
+        return {"status": "ok", "db": "ok"}
+    except Exception:
+        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+        return {"status": "error", "db": "no disponible"}
 
 @app.post(
     "/api/registro",
